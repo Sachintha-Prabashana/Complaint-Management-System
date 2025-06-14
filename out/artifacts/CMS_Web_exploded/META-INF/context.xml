@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <Resource name="jdbc/pool"
+              type="javax.sql.DataSource"
+              driverClassName="com.mysql.cj.jdbc.Driver"
+              url="jdbc:mysql://localhost:3306/cms"
+              username="root"
+              password="Sachintha@2003"
+              maxTotal="5"
+              initialSize="5"/>
+</Context>
