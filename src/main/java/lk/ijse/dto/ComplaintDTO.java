@@ -15,7 +15,7 @@ public class ComplaintDTO {
     // Constructors
     public ComplaintDTO() {}
 
-    public ComplaintDTO(String id, String title, String category, String description, String status, String date, String userId) {
+    public ComplaintDTO(String id, String title, String category, String description, String status, String date, String userId, String remarks) {
         this.id = id;
         this.title = title;
         this.category = category;
@@ -23,7 +23,7 @@ public class ComplaintDTO {
         this.status = status;
         this.date = date;
         this.userId = userId;
-        this.remarks = null;
+        this.remarks = remarks;
     }
 
     // Getters and Setters

@@ -21,11 +21,11 @@ public class UpdateComplaintServlet extends HttpServlet {
 
         if (success) {
             // Redirect back to dashboard on success
-            resp.sendRedirect("/jsp/admin-dashboard.jsp");
+            resp.sendRedirect(req.getContextPath() + "/jsp/admin-dashboard.jsp");
         } else {
             // Forward back to dashboard with error message
             req.setAttribute("error", "Failed to update complaint.");
-            req.getRequestDispatcher("/jsp/admin-dashboard.jsp").forward(req, resp);
+            req.getRequestDispatcher(req.getContextPath() + "/jsp/admin-dashboard.jsp").forward(req, resp);
         }
     }
 }

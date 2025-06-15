@@ -36,16 +36,17 @@ public class ComplaintServlet  extends HttpServlet {
 
         ComplaintDTO dto = new ComplaintDTO(
                 complaintId, title, category, description,
-                "Pending", today, user.getId()
+                "Pending", today, user.getId(), null
         );
 
         boolean success = dao.saveComplaint(dto);
 
         if (success) {
-            resp.sendRedirect("/jsp/employee-dashboard.jsp?success=1");
+            resp.sendRedirect(req.getContextPath() + "/jsp/employee-dashboard.jsp?success=1");
         } else {
-            resp.sendRedirect("/jsp/employee-dashboard.jsp?error=1");
+            resp.sendRedirect(req.getContextPath() + "/jsp/employee-dashboard.jsp?error=1");
         }
+
     }
 
 }

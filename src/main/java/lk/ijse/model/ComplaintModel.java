@@ -42,7 +42,7 @@ public class ComplaintModel {
 
     // Save a new complaint
     public boolean saveComplaint(ComplaintDTO dto) {
-        String sql = "INSERT INTO complaint (id, title, category, description, status, date, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO complaint (id, title, category, description, status, date, user_id, remarks) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -50,9 +50,10 @@ public class ComplaintModel {
             stmt.setString(2, dto.getTitle());
             stmt.setString(3, dto.getCategory());
             stmt.setString(4, dto.getDescription());
-            stmt.setString(5, "Pending"); // default status
+            stmt.setString(5, "Pending");
             stmt.setString(6, dto.getDate());
             stmt.setString(7, dto.getUserId());
+            stmt.setString(8, dto.getRemarks()); // explicitly set remarks as null for now
 
             return stmt.executeUpdate() > 0;
         } catch (Exception e) {
@@ -60,6 +61,7 @@ public class ComplaintModel {
             return false;
         }
     }
+
 
     // Retrieve complaints submitted by a specific employee
     public List<ComplaintDTO> getComplaintsByUser(String userId) {
