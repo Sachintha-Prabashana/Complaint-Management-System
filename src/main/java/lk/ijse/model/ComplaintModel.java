@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,7 +84,7 @@ public class ComplaintModel {
                 dto.setStatus(rs.getString("status"));
                 dto.setDate(rs.getString("date"));
                 dto.setUserId(rs.getString("user_id"));
-                dto.setRemarks(rs.getString("remarks")); // ✅ Admin remarks shown in employee dashboard
+                dto.setRemarks(rs.getString("remarks"));
                 list.add(dto);
             }
 
@@ -137,4 +138,62 @@ public class ComplaintModel {
             return false;
         }
     }
+
+    public boolean deleteComplaint(String id) {
+        String sql = "DELETE FROM complaint WHERE id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, id);
+            return stmt.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public ComplaintDTO getComplaintById(String id) {
+        String sql = "SELECT * FROM complaint WHERE id = ?";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new ComplaintDTO(
+                        rs.getString("id"),
+                        rs.getString("title"),
+                        rs.getString("category"),
+                        rs.getString("description"),
+                        rs.getString("status"),
+                        rs.getString("date"),
+                        rs.getString("user_id"),
+                        rs.getString("remarks")
+                );
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public boolean updateComplaint(ComplaintDTO complaint) {
+        String sql = "UPDATE complaint SET title = ?, category = ?, description = ? WHERE id = ?";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, complaint.getTitle());
+            ps.setString(2, complaint.getCategory());
+            ps.setString(3, complaint.getDescription());
+            ps.setString(4, complaint.getId());
+
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

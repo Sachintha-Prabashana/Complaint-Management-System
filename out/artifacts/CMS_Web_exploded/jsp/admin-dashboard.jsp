@@ -364,7 +364,7 @@
                     <div class="fw-semibold"><%= session.getAttribute("username") %></div>
                     <small class="opacity-75">Administrator</small>
                 </div>
-                <a href="signIn.jsp" class="logout-btn">
+                <a href="<%=request.getContextPath()%>/logout" class="logout-btn">
                     <i class="fas fa-sign-out-alt me-1"></i>Logout
                 </a>
             </div>
@@ -375,45 +375,6 @@
 <!-- Dashboard Content -->
 <div class="dashboard-content">
     <div class="container">
-
-        <!-- Filter Section -->
-        <div class="filter-section fade-in">
-            <div class="row align-items-end">
-                <div class="col-md-4 mb-3">
-                    <label class="form-label">Search Complaints</label>
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" class="form-control" id="searchInput" placeholder="Search by title, ID, or employee...">
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="form-label">Filter by Status</label>
-                    <select class="form-select" id="statusFilter">
-                        <option value="">All Status</option>
-                        <option value="pending">Pending</option>
-                        <option value="in-progress">In Progress</option>
-                        <option value="resolved">Resolved</option>
-                        <option value="rejected">Rejected</option>
-                    </select>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="form-label">Filter by Category</label>
-                    <select class="form-select" id="categoryFilter">
-                        <option value="">All Categories</option>
-                        <option value="Technical">Technical</option>
-                        <option value="Facilities">Facilities</option>
-                        <option value="HR">Human Resources</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-                <div class="col-md-2 mb-3">
-                    <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">
-                        <i class="fas fa-undo me-1"></i>Clear
-                    </button>
-                </div>
-            </div>
-        </div>
-
         <!-- Complaints Table -->
         <div class="complaint-table fade-in">
             <div class="card-header">
@@ -449,9 +410,32 @@
                         <td><%= complaint.getDate() %></td>
                         <td><%= complaint.getRemarks() != null ? complaint.getRemarks() : "" %></td>
                         <td class="action-buttons">
-                            <a href="javascript:void(0)" class="btn btn-outline-primary btn-sm" onclick="viewComplaint('<%= complaint.getId() %>')">View</a>
+<%--                            <a href="javascript:void(0)" class="btn btn-outline-primary btn-sm" onclick="viewComplaint('<%= complaint.getId() %>')">View</a>--%>
                             <a href="javascript:void(0)" class="btn btn-outline-success btn-sm" onclick="openUpdateModal('<%= complaint.getId() %>', '<%= complaint.getStatus() %>', '<%= complaint.getRemarks() != null ? complaint.getRemarks().replace("'", "\\'") : "" %>')">Update</a>
-                            <a href="DeleteComplaintServlet?id=<%= complaint.getId() %>" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to delete this complaint?')">Delete</a>
+                            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal_<%= complaint.getId() %>">
+                                Delete
+                            </button>
+                            <div class="modal fade" id="deleteModal_<%= complaint.getId() %>" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <form action="<%= request.getContextPath() %>/deleteComplaint" method="post">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title text-danger">Confirm Delete</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Are you sure you want to delete complaint <strong><%= complaint.getId() %></strong>?</p>
+                                                <input type="hidden" name="id" value="<%= complaint.getId() %>">
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
                         </td>
                     </tr>
                     <%  }
@@ -504,89 +488,6 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="submit" form="updateStatusForm" class="btn btn-primary">
                     <i class="fas fa-save me-1"></i>Update Status
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- View Details Modal -->
-<div class="modal fade" id="viewDetailsModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-eye me-2"></i>Complaint Details
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <strong>Complaint ID:</strong>
-                        <p id="detailComplaintId"></p>
-                    </div>
-                    <div class="col-md-6">
-                        <strong>Employee:</strong>
-                        <p id="detailEmployee"></p>
-                    </div>
-                    <div class="col-md-6">
-                        <strong>Category:</strong>
-                        <p id="detailCategory"></p>
-                    </div>
-                    <div class="col-md-6">
-                        <strong>Status:</strong>
-                        <p id="detailStatus"></p>
-                    </div>
-                    <div class="col-md-6">
-                        <strong>Date Submitted:</strong>
-                        <p id="detailDate"></p>
-                    </div>
-                    <div class="col-md-6">
-                        <strong>Last Updated:</strong>
-                        <p id="detailLastUpdated"></p>
-                    </div>
-                </div>
-                <div class="mt-3">
-                    <strong>Title:</strong>
-                    <p id="detailTitle"></p>
-                </div>
-                <div class="mt-3">
-                    <strong>Description:</strong>
-                    <p id="detailDescription"></p>
-                </div>
-                <div class="mt-3">
-                    <strong>Admin Remarks:</strong>
-                    <p id="detailRemarks" class="text-muted"></p>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title text-danger">
-                    <i class="fas fa-exclamation-triangle me-2"></i>Confirm Delete
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to delete this complaint? This action cannot be undone.</p>
-                <div class="alert alert-warning">
-                    <strong>Complaint ID:</strong> <span id="deleteComplaintId"></span>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" onclick="confirmDelete()">
-                    <i class="fas fa-trash me-1"></i>Delete Complaint
                 </button>
             </div>
         </div>

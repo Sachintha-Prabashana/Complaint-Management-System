@@ -19,7 +19,6 @@
         return;
     }
 
-    // Load complaints from DAO
     ComplaintModel dao = new ComplaintModel();
     List<ComplaintDTO> complaints = dao.getComplaintsByUser(user.getId());
 %>
@@ -52,16 +51,14 @@
                     <div class="fw-semibold"><%= session.getAttribute("username") %></div>
                     <small class="opacity-75">Employee</small>
                 </div>
-                <a href="signIn.jsp" class="logout-btn">Logout</a>
+                <a href="<%=request.getContextPath()%>/logout" class="logout-btn">Logout</a>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Dashboard Content -->
 <div class="dashboard-content">
     <div class="container">
-        <!-- Quick Actions -->
         <div class="row mb-4">
             <div class="col-md-12">
                 <div class="action-card">
@@ -88,7 +85,7 @@
                         <th>Category</th>
                         <th>Status</th>
                         <th>Date</th>
-                        <th>Remarks</th> <!-- ✅ Added -->
+                        <th>Remarks</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
@@ -105,7 +102,7 @@
             </span>
                         </td>
                         <td><%= complaint.getDate() %></td>
-                        <td><%= complaint.getRemarks() != null ? complaint.getRemarks() : "No remarks yet" %></td> <!-- ✅ Added -->
+                        <td><%= complaint.getRemarks() != null ? complaint.getRemarks() : "No remarks yet" %></td>
                         <td>
                             <% if (!"Resolved".equalsIgnoreCase(complaint.getStatus())) { %>
                             <a href="edit-complaint.jsp?id=<%= complaint.getId() %>" class="btn btn-outline-primary btn-sm">Edit</a>
