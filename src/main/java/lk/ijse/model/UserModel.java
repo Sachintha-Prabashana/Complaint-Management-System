@@ -9,7 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class UserDAO {
+public class UserModel {
 
     private Connection getConnection() throws Exception {
         Context initCtx = new InitialContext();

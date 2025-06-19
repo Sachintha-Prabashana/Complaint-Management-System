@@ -7,14 +7,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lk.ijse.dto.UserDTO;
-import lk.ijse.model.UserDAO;
+import lk.ijse.model.UserModel;
 
 import java.io.IOException;
 
 @WebServlet("/signUp")
 public class SignUpServlet  extends HttpServlet {
 
-    private final UserDAO userDAO = new UserDAO();
+    private final UserModel userDAO = new UserModel();
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String fullName = req.getParameter("fullName");

@@ -106,8 +106,29 @@
                         <td>
                             <% if (!"Resolved".equalsIgnoreCase(complaint.getStatus())) { %>
                             <a href="edit-complaint.jsp?id=<%= complaint.getId() %>" class="btn btn-outline-primary btn-sm">Edit</a>
-                            <a href="DeleteComplaintServlet?id=<%= complaint.getId() %>" class="btn btn-outline-danger btn-sm"
-                               onclick="return confirm('Are you sure you want to delete this complaint?');">Delete</a>
+                            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal_<%= complaint.getId() %>">
+                                Delete
+                            </button>
+                            <div class="modal fade" id="deleteModal_<%= complaint.getId() %>" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <form action="<%= request.getContextPath() %>/employeeServlet" method="post">
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" name="id" value="<%= complaint.getId() %>">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title text-danger">Confirm Delete</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Are you sure you want to delete complaint <strong><%= complaint.getId() %></strong>?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
                             <% } else { %>
                             <span class="text-muted">Locked</span>
                             <% } %>
@@ -134,7 +155,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="complaintForm" action="<%=request.getContextPath()%>/complaint" method="post">
+                <form id="complaintForm" action="<%=request.getContextPath()%>/employeeServlet" method="post">
+                    <input type="hidden" name="action" value="submit">
+
                     <div class="mb-3">
                         <label for="title" class="form-label">Complaint Title</label>
                         <input type="text" class="form-control" id="title" name="title" required>
@@ -164,6 +187,10 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="<%= request.getContextPath() %>/js/alerts.js"></script>
 
 </body>
 </html>

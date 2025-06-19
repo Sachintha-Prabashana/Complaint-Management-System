@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lk.ijse.dto.UserDTO;
-import lk.ijse.model.UserDAO;
+import lk.ijse.model.UserModel;
 
 import java.io.IOException;
 
@@ -20,7 +20,7 @@ public class SignInServlet extends HttpServlet {
 
         // Here you would typically validate the username and password against a database
 
-        UserDAO userDAO = new UserDAO();
+        UserModel userDAO = new UserModel();
         UserDTO user = userDAO.authenticateUser(username, password);
 
         if (user != null) {
