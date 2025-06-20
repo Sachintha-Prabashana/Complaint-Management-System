@@ -116,7 +116,7 @@ We welcome contributions to improve the Complaint Management System! Please foll
 
 1.Clone the repository:
 
-git clone https://github.com/hasinduudara/CMS.git
+git clone https://github.com/Sachintha-Prabashana/Complaint-Management-System.git
 
 2.Import the project into your IDE (e.g., IntelliJ IDEA or Eclipse).
 3.Set up a MySQL database using the schema above.
@@ -132,7 +132,7 @@ git clone https://github.com/hasinduudara/CMS.git
 
 ### Support
 - **Project Repository**: [https://github.com/yourusername/complaint-management-system](https://github.com/Sachintha-Prabashana/Complaint-Management-System.git)
-
+- **Access the system**: (http://localhost:8080/CMS_Web_exploded/)
 ---
 
 **Thank you for using the Complaint Management System! We hope this tool helps streamline your organization's complaint handling process.**
