@@ -7,9 +7,17 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="lk.ijse.dto.ComplaintDTO, lk.ijse.model.ComplaintModel" %>
+<%@ page import="javax.sql.DataSource" %>
 <%
     String id = request.getParameter("id");
-    ComplaintModel model = new ComplaintModel();
+    DataSource ds = (DataSource) application.getAttribute("dataSource");
+    if (ds == null) {
+%>
+<div class="alert alert-danger">Database connection not initialized.</div>
+<%
+        return;
+    }
+    ComplaintModel model = new ComplaintModel(ds);
     ComplaintDTO complaint = model.getComplaintById(id);
 
     if (complaint == null) {
@@ -20,6 +28,7 @@
         return;
     }
 %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

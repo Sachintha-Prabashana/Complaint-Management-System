@@ -11,11 +11,14 @@ import java.sql.ResultSet;
 
 public class UserModel {
 
+    private final DataSource dataSource;
+
+    public UserModel(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
     private Connection getConnection() throws Exception {
-        Context initCtx = new InitialContext();
-        Context envCtx = (Context) initCtx.lookup("java:comp/env");
-        DataSource ds = (DataSource) envCtx.lookup("jdbc/pool");
-        return ds.getConnection();
+        return dataSource.getConnection();
     }
 
     public String getNextId() {

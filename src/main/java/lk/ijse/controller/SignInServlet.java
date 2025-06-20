@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpSession;
 import lk.ijse.dto.UserDTO;
 import lk.ijse.model.UserModel;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 
 @WebServlet("/signIn")
@@ -20,8 +21,9 @@ public class SignInServlet extends HttpServlet {
 
         // Here you would typically validate the username and password against a database
 
-        UserModel userDAO = new UserModel();
-        UserDTO user = userDAO.authenticateUser(username, password);
+        DataSource ds = (DataSource) getServletContext().getAttribute("dataSource");
+        UserModel model = new UserModel(ds);
+        UserDTO user = model.authenticateUser(username, password);
 
         if (user != null) {
             HttpSession session = req.getSession();
@@ -30,9 +32,9 @@ public class SignInServlet extends HttpServlet {
 
             // Redirect based on role
             if ("Admin".equalsIgnoreCase(user.getRole())) {
-                resp.sendRedirect(req.getContextPath() + "/jsp/admin-dashboard.jsp");
+                resp.sendRedirect(req.getContextPath() + "/adminComplaint");
             } else {
-                resp.sendRedirect(req.getContextPath() + "/jsp/employee-dashboard.jsp");
+                resp.sendRedirect(req.getContextPath() + "/employeeServlet");
             }
 
         } else {

@@ -7,9 +7,20 @@
 --%>
 <%@ page import="lk.ijse.dto.ComplaintDTO, lk.ijse.model.ComplaintModel" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="lk.ijse.dto.ComplaintDTO, lk.ijse.model.ComplaintModel" %>
+<%@ page import="javax.sql.DataSource" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
-    String idStr = request.getParameter("id");
-    ComplaintDTO complaint = new ComplaintModel().getComplaintById(idStr);
+    String id = request.getParameter("id");
+    DataSource ds = (DataSource) application.getAttribute("dataSource");
+    if (ds == null) {
+%>
+<div class='alert alert-danger'><i class='fas fa-exclamation-triangle me-2'></i>Database connection is not initialized.</div>
+<%
+        return;
+    }
+    ComplaintModel complaintModel = new ComplaintModel(ds);
+    ComplaintDTO complaint = complaintModel.getComplaintById(id);
 
     if (complaint == null) {
         out.println("<div class='alert alert-danger'><i class='fas fa-exclamation-triangle me-2'></i>Complaint not found!</div>");

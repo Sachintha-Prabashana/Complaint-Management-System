@@ -9,12 +9,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import lk.ijse.dto.UserDTO;
 import lk.ijse.model.UserModel;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 
 @WebServlet("/signUp")
 public class SignUpServlet  extends HttpServlet {
 
-    private final UserModel userDAO = new UserModel();
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String fullName = req.getParameter("fullName");
@@ -34,7 +35,9 @@ public class SignUpServlet  extends HttpServlet {
         dto.setPassword(password);
         dto.setRole(role);
 
-        boolean success = userDAO.registerUser(dto);
+        DataSource ds = (DataSource) getServletContext().getAttribute("dataSource");
+        UserModel model = new UserModel(ds);
+        boolean success = model.registerUser(dto);
 
         if (success) {
             resp.sendRedirect("signIn.jsp?message=RegistrationSuccessful");

@@ -7,11 +7,9 @@
 --%>
 <!-- ADMIN DASHBOARD (admin-dashboard.jsp) -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="java.util.*, java.text.*" %>
-<%@ page import="lk.ijse.dto.ComplaintDTO, lk.ijse.model.ComplaintModel" %>
+<%@ page import="lk.ijse.dto.ComplaintDTO, java.util.List" %>
 <%
-    ComplaintModel complaintModel = new ComplaintModel();
-    List<ComplaintDTO> complaintList = complaintModel.getAllComplaints();
+    List<ComplaintDTO> complaintList = (List<ComplaintDTO>) request.getAttribute("complaintList");
 %>
 
 <!DOCTYPE html>

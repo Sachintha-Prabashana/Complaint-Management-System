@@ -9,18 +9,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.*, java.text.*" %>
 <%@ page import="lk.ijse.dto.ComplaintDTO" %>
-<%@ page import="lk.ijse.dto.ComplaintDTO, lk.ijse.model.ComplaintModel, java.util.List" %>
-
+<%@ page import="lk.ijse.dto.ComplaintDTO" %>
 <%
-    // Get user object from session
-    lk.ijse.dto.UserDTO user = (lk.ijse.dto.UserDTO) session.getAttribute("user");
-    if (user == null || !"Employee".equals(user.getRole())) {
-        response.sendRedirect("signIn.jsp");
-        return;
-    }
-
-    ComplaintModel dao = new ComplaintModel();
-    List<ComplaintDTO> complaints = dao.getComplaintsByUser(user.getId());
+    List<ComplaintDTO> complaints = (List<ComplaintDTO>) request.getAttribute("complaints");
 %>
 
 
@@ -105,7 +96,8 @@
                         <td><%= complaint.getRemarks() != null ? complaint.getRemarks() : "No remarks yet" %></td>
                         <td>
                             <% if (!"Resolved".equalsIgnoreCase(complaint.getStatus())) { %>
-                            <a href="edit-complaint.jsp?id=<%= complaint.getId() %>" class="btn btn-outline-primary btn-sm">Edit</a>
+                            <a href="<%= request.getContextPath() %>/jsp/edit-complaint.jsp?id=<%= complaint.getId() %>" class="btn btn-outline-primary btn-sm">Edit</a>
+
                             <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal_<%= complaint.getId() %>">
                                 Delete
                             </button>

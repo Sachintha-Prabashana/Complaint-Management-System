@@ -10,9 +10,11 @@ import lk.ijse.dto.ComplaintDTO;
 import lk.ijse.dto.UserDTO;
 import lk.ijse.model.ComplaintModel;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @WebServlet("/employeeServlet")
 public class EmployeeServlet extends HttpServlet {
@@ -22,7 +24,7 @@ public class EmployeeServlet extends HttpServlet {
         String action = req.getParameter("action");
 
         if (action == null) {
-            resp.sendRedirect(req.getContextPath() + "/jsp/employee-dashboard.jsp?error=InvalidAction");
+            resp.sendRedirect(req.getContextPath() + "/employeeServlet?error=InvalidAction");
             return;
         }
 
@@ -37,7 +39,7 @@ public class EmployeeServlet extends HttpServlet {
                 handleDeleteComplaint(req, resp);
                 break;
             default:
-                resp.sendRedirect(req.getContextPath() + "/jsp/employee-dashboard.jsp?error=UnknownAction");
+                resp.sendRedirect(req.getContextPath() + "/employeeServlet?error=UnknownAction");
         }
     }
 
@@ -55,7 +57,8 @@ public class EmployeeServlet extends HttpServlet {
         String description = req.getParameter("description");
         String today = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 
-        ComplaintModel dao = new ComplaintModel();
+        DataSource ds = (DataSource) getServletContext().getAttribute("dataSource");
+        ComplaintModel dao = new ComplaintModel(ds);
         String complaintId = dao.getNextId();
 
         ComplaintDTO dto = new ComplaintDTO(
@@ -66,9 +69,9 @@ public class EmployeeServlet extends HttpServlet {
         boolean success = dao.saveComplaint(dto);
 
         if (success) {
-            resp.sendRedirect(req.getContextPath() + "/jsp/employee-dashboard.jsp?msg=submit-success");
+            resp.sendRedirect(req.getContextPath() + "/employeeServlet?msg=submit-success");
         } else {
-            resp.sendRedirect(req.getContextPath() + "/jsp/employee-dashboard.jsp?error=1");
+            resp.sendRedirect(req.getContextPath() + "/employeeServlet?error=SubmitFailed");
         }
     }
 
@@ -78,8 +81,9 @@ public class EmployeeServlet extends HttpServlet {
         String category = req.getParameter("category");
         String description = req.getParameter("description");
 
-        ComplaintModel model = new ComplaintModel();
-        ComplaintDTO complaint = model.getComplaintById(id);
+        DataSource ds = (DataSource) getServletContext().getAttribute("dataSource");
+        ComplaintModel dao = new ComplaintModel(ds);
+        ComplaintDTO complaint = dao.getComplaintById(id);
 
         if (complaint == null || "Resolved".equalsIgnoreCase(complaint.getStatus())) {
             resp.sendRedirect(req.getContextPath() + "/jsp/employee-dashboard.jsp?error=CannotEditResolved");
@@ -90,10 +94,10 @@ public class EmployeeServlet extends HttpServlet {
         complaint.setCategory(category);
         complaint.setDescription(description);
 
-        boolean success = model.updateComplaint(complaint);
+        boolean success = dao.updateComplaint(complaint);
 
         if (success) {
-            resp.sendRedirect(req.getContextPath() + "/jsp/employee-dashboard.jsp?msg=update-success");
+            resp.sendRedirect(req.getContextPath() + "/employeeServlet?msg=update-success");
         } else {
             resp.sendRedirect(req.getContextPath() + "/jsp/edit-complaint.jsp?id=" + id + "&error=UpdateFailed");
         }
@@ -102,27 +106,49 @@ public class EmployeeServlet extends HttpServlet {
     private void handleDeleteComplaint(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String complaintId = req.getParameter("id");
 
-        ComplaintModel model = new ComplaintModel();
-        ComplaintDTO complaint = model.getComplaintById(complaintId);
+        DataSource ds = (DataSource) getServletContext().getAttribute("dataSource");
+        ComplaintModel dao = new ComplaintModel(ds);
+        ComplaintDTO complaint = dao.getComplaintById(complaintId);
 
         if (complaint == null) {
-            resp.sendRedirect(req.getContextPath() + "/jsp/employee-dashboard.jsp?error=ComplaintNotFound");
+            resp.sendRedirect(req.getContextPath() + "/employeeServlet?error=ComplaintNotFound");
             return;
         }
 
         // Prevent deletion if already resolved
         if ("Resolved".equalsIgnoreCase(complaint.getStatus())) {
-            resp.sendRedirect(req.getContextPath() + "/jsp/employee-dashboard.jsp?error=CannotDeleteResolved");
+            resp.sendRedirect(req.getContextPath() + "/employeeServlet?error=CannotDeleteResolved");
+
             return;
         }
 
-        boolean deleted = model.deleteComplaint(complaintId);
+        boolean deleted = dao.deleteComplaint(complaintId);
 
         if (deleted) {
-            resp.sendRedirect(req.getContextPath() + "/jsp/employee-dashboard.jsp?msg=delete-success");
+            resp.sendRedirect(req.getContextPath() + "/employeeServlet?msg=delete-success");
         } else {
-            resp.sendRedirect(req.getContextPath() + "/jsp/employee-dashboard.jsp?error=DeleteFailed");
+            resp.sendRedirect(req.getContextPath() + "/employeeServlet?error=DeleteFailed");
         }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        HttpSession session = req.getSession(false);
+        UserDTO user = (UserDTO) session.getAttribute("user");
+
+        if (user == null || !"Employee".equals(user.getRole())) {
+            resp.sendRedirect("signIn.jsp");
+            return;
+        }
+
+        DataSource ds = (DataSource) getServletContext().getAttribute("dataSource");
+        ComplaintModel model = new ComplaintModel(ds);
+        List<ComplaintDTO> complaints = model.getComplaintsByUser(user.getId());
+
+        req.setAttribute("complaints", complaints);
+        req.getRequestDispatcher("/jsp/employee-dashboard.jsp").forward(req, resp);
     }
 
 }

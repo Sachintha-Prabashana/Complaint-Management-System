@@ -13,11 +13,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ComplaintModel {
-    private Connection getConnection() throws Exception {
-        Context initCtx = new InitialContext();
-        Context envCtx = (Context) initCtx.lookup("java:comp/env");
-        DataSource ds = (DataSource) envCtx.lookup("jdbc/pool");
-        return ds.getConnection();
+    private final DataSource dataSource;
+
+    public ComplaintModel(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    private Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
     }
 
     // Generate next complaint ID like CMP-001
